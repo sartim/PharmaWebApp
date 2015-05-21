@@ -1,28 +1,58 @@
+<?php require_once('Connections/pharma_con.php'); ?>
+<?php
+// *** Validate request to login to this site.
+if (!isset($_SESSION)) {
+  session_start();
+}
+
+$loginFormAction = $_SERVER['PHP_SELF'];
+if (isset($_GET['accesscheck'])) {
+  $_SESSION['PrevUrl'] = $_GET['accesscheck'];
+}
+
+if (isset($_POST['username'])) {
+  $loginUsername=$_POST['username'];
+  $password=$_POST['password'];
+  $MM_fldUserAuthorization = "";
+  $MM_redirectLoginSuccess = "products.html";
+  $MM_redirectLoginFailed = "login.html";
+  $MM_redirecttoReferrer = false;
+  mysql_select_db($database_pharma_con, $pharma_con);
+  
+  $LoginRS__query=sprintf("SELECT username, password FROM webusers WHERE username='%s' AND password='%s'",
+    get_magic_quotes_gpc() ? $loginUsername : addslashes($loginUsername), get_magic_quotes_gpc() ? $password : addslashes($password)); 
+   
+  $LoginRS = mysql_query($LoginRS__query, $pharma_con) or die(mysql_error());
+  $loginFoundUser = mysql_num_rows($LoginRS);
+  if ($loginFoundUser) {
+     $loginStrGroup = "";
+    
+    //declare two session variables and assign them
+    $_SESSION['MM_Username'] = $loginUsername;
+    $_SESSION['MM_UserGroup'] = $loginStrGroup;	      
+
+    if (isset($_SESSION['PrevUrl']) && false) {
+      $MM_redirectLoginSuccess = $_SESSION['PrevUrl'];	
+    }
+    header("Location: " . $MM_redirectLoginSuccess );
+  }
+  else {
+    header("Location: ". $MM_redirectLoginFailed );
+  }
+}
+?>
 <!DOCTYPE HTML>
 <head>
-<title>PharmaGlobal | Home</title>
+<title>PharmaGlobal | Login</title>
 <meta charset="utf-8">
 <link rel="stylesheet" type="text/css" media="screen" href="css/style.css">
 <link rel="stylesheet" type="text/css" media="screen" href="css/menu/css/simple_menu.css">
 <link rel="stylesheet" href="css/nivo-slider.css" type="text/css" media="screen">
-<link rel="stylesheet" type="text/css" href="css/boxes/css/style5.css">
 <!-- Google fonts -->
 <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Playfair+Display:400italic' rel='stylesheet' type='text/css' />
-<link href='http://fonts.googleapis.com/css?family=Terminal+Dosis' rel='stylesheet' type='text/css' />
 <!--JS FILES STARTS-->
 <script src="js/jquery.min.js"></script>
-<script src="js/jquery.eislideshow.js"></script>
 <script src="js/custom.js"></script>
-<script>
-jQuery.noConflict()(function ($) {
-    $('#ei-slider').eislideshow({
-        animation: 'center',
-        autoplay: true,
-        slideshow_interval: 3000,
-        titlesFactor: 0
-    });
-});
-</script>
 <script src="js/slides/slides.min.jquery.js"></script>
 <script src="js/cycle-slider/cycle.js"></script>
 <script src="js/nivo-slider/jquery.nivo.slider.js"></script>
@@ -43,7 +73,7 @@ jQuery.noConflict()(function ($) {
 <body>
 <div class="header">
   <div id="site_title"><a href="index.html"><img src="img/logo.jpg" alt="" width="190" 
-          height="38" /></a></div>
+          height="38"></a></div>
   <!-- Dynamic Menu -->
   <ol id="menu" class="simple_menu simple_menu_css horizontal black_menu">
     <li><a href="index.html">Home</a></li>
@@ -56,93 +86,37 @@ jQuery.noConflict()(function ($) {
   <!-- menu 2 -->
   <ol id="menu2" class="simple_menu simple_menu_css horizontal black_menu">
     <li><a href="login.php">Login</a></li>
-    <li><a href="purchase.php">Register</a></li>
+    <li><a href="register.php">Register</a></li>
     <li class="last"><a href="Default.aspx">E Prescriptions</a></li>
   </ol>
   <div class="clr"></div>
 </div>
 <!-- end header -->
-<div class="wrapper">
-  <div id="ei-slider" class="ei-slider">
-    <ul class="ei-slider-large">
-      <li> <img src="img/large/1.jpg" alt="">
-        <div class="ei-title">
-          <h2>Prescriptions</h2>
-          <h3>We deliver</h3>
-        </div>
-      </li>
-      <li> <img src="img/large/2.jpg" alt="">
-        <div class="ei-title">
-          <h2>Global Connection</h2>
-          <h3></h3>
-        </div>
-      </li>
-      <li> <img src="img/large/3.jpg" alt="">
-        <div class="ei-title">
-          <h2> </h2>
-          <h3> </h3>
-        </div>
-      </li>
-      <li> <img src="img/large/4.jpg" alt="">
-        <div class="ei-title">
-          <h2>R&D Centers for excellence</h2>
-          <h3>Inhouse</h3>
-        </div>
-      </li>
-      <li> <img src="img/large/5.jpg" alt="">
-        <div class="ei-title">
-          <h2>Advancing</h2>
-          <h3></h3>
-        </div>
-      </li>
-      <li> <img src="img/large/6.jpg" alt="">
-        <div class="ei-title">
-          <h2></h2>
-          <h3></h3>
-        </div>
-      </li>
-      <li> <img src="img/large/7.jpg" alt="">
-        <div class="ei-title">
-          <h2></h2>
-          <h3></h3>
-        </div>
-      </li>
-    </ul>
-    <!-- ei-slider-large -->
-    <ul class="ei-slider-thumbs">
-      <li class="ei-slider-element">Current</li>
-      <li><a href="#">Slide 1</a><img src="img/thumbs/1.jpg" alt=""></li>
-      <li><a href="#">Slide 2</a><img src="img/thumbs/2.jpg" alt=""></li>
-      <li><a href="#">Slide 3</a><img src="img/thumbs/3.jpg" alt=""></li>
-      <li><a href="#">Slide 4</a><img src="img/thumbs/4.jpg" alt=""></li>
-      <li><a href="#">Slide 5</a><img src="img/thumbs/5.jpg" alt=""></li>
-      <li><a href="#">Slide 6</a><img src="img/thumbs/6.jpg" alt=""></li>
-      <li><a href="#">Slide 7</a><img src="img/thumbs/7.jpg" alt=""></li>
-    </ul>
-    <!-- ei-slider-thumbs -->
-  </div>
-  <!-- ei-slider -->
-</div>
-<!-- wrapper -->
+<h1 class="logo">Login Account</h1>
 <div id="container">
-  <ul class="ca-menu" style="margin: 40px 0">
-    <div class="one-third">
-    <h2>Our Mission</h2>
-    <p>We are committed to improving people’s lives. Through our existing products and pending approvals across our markets, our aim is to provide patients with better access to high-quality, cost-effective medicines in key therapeutic areas.</p>
-  </div>
-  <div class="one-third">
-    <h2>Our Vision</h2>
-    <p>Our vision is to build Hikma into a world class and leading specialty pharmaceutical company, with presence across the globe. Through organic growth and by acquisitions which are aligned with our strategy, we will continue to develop the business and maintain the high standards of ethics and responsibility which are central to the way we operate.</p>
-  </div>
-  <div class="one-third last">
-    <h2>About Us</h2>
-    <p>Pharma is a company which manufactures and distributes large and small scale pharmaceutical products. It has small scale distribution centers which sells the products in small amounts and other products which need prescriptions. Pharma distribution centers are located all over the country.</p>
-  </div>
-  </ul>
-  <div style="clear:both; height: 40px"></div>
-  <div class="box_highlight">
-    <h1 style="font-size:32px; letter-spacing: 16px; text-align:center; text-transform: uppercase; color: #a7a7a7"> Elevating Your Healthcare</h1>
-  </div>
+  <div class="content">
+   
+    <ul id="tabify_menu" class="menu_tab" style="margin: 0;">
+      <li class="active"><a href="#fane1">Login</a></li>
+    </ul>
+    <div id="fane1" class="tab_content">
+      <h3 style="text-align:center">Fill in your User accout and Password in the fields below</center></h3>
+      <div>
+	<form action="<?php echo $loginFormAction; ?>" method="POST" name="login" style="text-align:center">
+	User Name:
+	  <input name="username" type="text"><br />
+	Passwword:<input name="password" type="password"><br />
+	&nbsp;&nbsp;<input name="submit" type="submit" value="Login">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input name="reset" type="reset" value="Cancel">
+	
+	</form>
+	<div style="text-align:center">Forgot Password?</div> 
+	</div>
+ 
+      
+    </div>
+</div>
+<div style="clear:both"></div>
 </div>
 <!-- close container -->
 <div style="clear:both; height: 40px"></div>
