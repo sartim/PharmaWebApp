@@ -1,3 +1,3 @@
 # PharmaWebApp
-E-Commerce repository for showing an E Commerce Web Application using HTML, CSS, JavaScript, jQuery and PHP for Pharmaceutical products.
+This is an E-Commerce web application developed using HTML, CSS, JavaScript, PHP  and  it uses MySql database. The web application can be used for selling pharmaceutical products. 
 
